@@ -8,7 +8,6 @@ import baseball.Baseball;
 import chocozero.codesquad.JwpCodesquadJakeApplication;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
 @Controller
 public class BaseballController {
