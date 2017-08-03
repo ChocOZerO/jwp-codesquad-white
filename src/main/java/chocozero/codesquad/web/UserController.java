@@ -34,4 +34,31 @@ public class UserController {
 		mav.addObject("users", users);
 		return mav;
 	}
+	
+	@GetMapping("/users/{id}/form")
+	public ModelAndView getUserDetail(@PathVariable String id) {
+		ModelAndView mav = new ModelAndView("user/updateForm");
+		for (User user: users) {
+			if (user.getUserId().equals(id)) {
+				mav.addObject("user", user);
+			}
+		}
+		return mav;
+	}
+	
+	@PostMapping("/users/{id}/update")
+	public ModelAndView update(@PathVariable String id, User user) {
+		 
+		for (int i = 0; i < users.size(); i++) {
+			if(users.get(i).getUserId().equals(id)) {
+				users.get(i).setUserId(user.getUserId());
+				users.get(i).setPassword(user.getPassword());
+				users.get(i).setName(user.getName());
+				users.get(i).setEmail(user.getEmail());
+			}
+		}
+		System.out.println(user);
+		System.out.println(users);
+		return new ModelAndView("redirect:/users");
+	}
 }
