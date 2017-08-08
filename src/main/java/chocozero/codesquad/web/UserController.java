@@ -2,6 +2,7 @@ package chocozero.codesquad.web;
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,14 +10,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import chocozero.codesquad.domain.User;
+import chocozero.codesquad.domain.UserRepository;
 
 @Controller
 public class UserController {
-	ArrayList<User> users = new ArrayList<>();
+//	ArrayList<User> users = new ArrayList<>();
+	@Autowired
+	UserRepository userRepository;
 	
-	@GetMapping("/users/{index}")
-	public ModelAndView show(@PathVariable int index) {
-		User user = users.get(index);
+	@GetMapping("/users/{id}")
+	public ModelAndView show(@PathVariable Long id) {
+		User user = userRepository.findOne(id);
 		ModelAndView mav = new ModelAndView("user/profile");
 		mav.addObject("user", user);
 		return mav;
@@ -28,14 +32,14 @@ public class UserController {
 	
 	@PostMapping("/users")
 	public ModelAndView create(User user) {
-		users.add(user);
+		userRepository.save(user);
 		return new ModelAndView("redirect:/users");
 	}
 	
 	@GetMapping("/users")
 	public ModelAndView list() {
 		ModelAndView mav = new ModelAndView("user/list");
-		mav.addObject("users", users);
+		mav.addObject("users", userRepository.findAll());
 		return mav;
 	}
 	
@@ -45,29 +49,19 @@ public class UserController {
 	}
 	
 	@GetMapping("/users/{id}/form")
-	public ModelAndView getUserDetail(@PathVariable String id) {
+	public ModelAndView getUserDetail(@PathVariable Long id) {
 		ModelAndView mav = new ModelAndView("user/updateForm");
-		for (User user: users) {
-			if (user.getUserId().equals(id)) {
-				mav.addObject("user", user);
-			}
-		}
+		mav.addObject("user", userRepository.findOne(id));
 		return mav;
 	}
 	
 	@PostMapping("/users/{id}/update")
-	public ModelAndView update(@PathVariable String id, User user) {
-		 
-		for (int i = 0; i < users.size(); i++) {
-			if(users.get(i).getUserId().equals(id)) {
-				users.get(i).setUserId(user.getUserId());
-				users.get(i).setPassword(user.getPassword());
-				users.get(i).setName(user.getName());
-				users.get(i).setEmail(user.getEmail());
-			}
-		}
-		System.out.println(user);
-		System.out.println(users);
+	public ModelAndView update(@PathVariable Long id, User user) {
+		User userTmp = userRepository.findOne(id);
+		userTmp.setName(user.getName());
+		userTmp.setPassword(user.getPassword());
+		userTmp.setEmail(user.getEmail());
+		userRepository.save(userTmp);
 		return new ModelAndView("redirect:/users");
 	}
 }

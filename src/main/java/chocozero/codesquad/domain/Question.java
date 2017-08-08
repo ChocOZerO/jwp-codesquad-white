@@ -1,10 +1,29 @@
 package chocozero.codesquad.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Question {
+	@Id
+	@GeneratedValue
+	Long id;
+	
+	@Column(nullable=false)
 	String writer;
+	
+	@Column(length=150, nullable=false)
 	String title;
 	String contents;
 	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getWriter() {
 		return writer;
 	}

@@ -2,6 +2,7 @@ package chocozero.codesquad.web;
 
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,14 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import chocozero.codesquad.domain.Question;
+import chocozero.codesquad.domain.QuestionRepository;
 
 @Controller
 public class QuestionController {
-	ArrayList<Question> questions = new ArrayList<>();
+//	ArrayList<Question> questions = new ArrayList<>();
+	@Autowired
+	QuestionRepository questionRepository;
 	
 	@PostMapping("/qna")
 	ModelAndView ask(Question question) {
-		questions.add(question);
+//		questions.add(question);
+		questionRepository.save(question);
 		return new ModelAndView("redirect:/");
 	}
 	@GetMapping("/qna")
@@ -27,15 +32,15 @@ public class QuestionController {
 	@GetMapping("/")
 	ModelAndView getQuestions() {
 		ModelAndView mav = new ModelAndView("qna/list");
-		mav.addObject("questions", questions);
+		mav.addObject("questions", questionRepository.findAll());
 		return mav;
 	}
 	
-	@GetMapping("/questions/{index}")
-	ModelAndView showQuestionDetail(@PathVariable int index) {
-		Question question = questions.get(index);
+	@GetMapping("/questions/{id}")
+	ModelAndView showQuestionDetail(@PathVariable Long id) {
+//		Question question = questions.get(index);
 		ModelAndView mav = new ModelAndView("qna/show");
-		mav.addObject("question", question);
+		mav.addObject("question", questionRepository.findOne(id));
 		return mav;
 	}
 }
