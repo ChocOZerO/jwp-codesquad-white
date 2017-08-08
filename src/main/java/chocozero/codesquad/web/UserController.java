@@ -21,6 +21,10 @@ public class UserController {
 		mav.addObject("user", user);
 		return mav;
 	}
+	@GetMapping("/users/form")
+	public ModelAndView form() {
+		return new ModelAndView("user/form");
+	}
 	
 	@PostMapping("/users")
 	public ModelAndView create(User user) {
@@ -33,6 +37,11 @@ public class UserController {
 		ModelAndView mav = new ModelAndView("user/list");
 		mav.addObject("users", users);
 		return mav;
+	}
+	
+	@GetMapping("/users/login")
+	public ModelAndView login() {
+		return new ModelAndView("user/login");
 	}
 	
 	@GetMapping("/users/{id}/form")

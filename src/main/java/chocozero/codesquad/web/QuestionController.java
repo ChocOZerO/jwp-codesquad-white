@@ -19,6 +19,10 @@ public class QuestionController {
 		questions.add(question);
 		return new ModelAndView("redirect:/");
 	}
+	@GetMapping("/qna")
+	ModelAndView form() {
+		return new ModelAndView("qna/form");
+	}
 	
 	@GetMapping("/")
 	ModelAndView getQuestions() {

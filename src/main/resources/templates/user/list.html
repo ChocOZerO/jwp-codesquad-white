@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="kr">
-<head>
-    {{> layout/header}}
-</head>
-<body>
-    {{> layout/nav}}
-    {{> layout/subnav}}
-
+{{#partial "contents"}}
 <div class="container" id="main">
    <div class="col-md-10 col-md-offset-1">
       <div class="panel panel-default">
@@ -19,9 +11,9 @@
               <tbody>
                 {{#users}}
                 <tr>
-                    <th scope="row">{{@index}}</th>
+                    <th scope="row">{{id}}</th>
                     <td>{{userId}}</td>
-                    <td><a href="/users/{{@index}}">{{name}}</a></td>
+                    <td><a href="/users/{{id}}">{{name}}</a></td>
                     <td>{{email}}</td>
                     <td><a href="/users/{{userId}}/form" class="btn btn-success" role="button">수정</a></td>
                 </tr>
@@ -30,8 +22,6 @@
         </div>
     </div>
 </div>
+{{/partial}}
 
-    {{> layout/footer}}
-    
-</body>
-</html>
+{{> base}}
