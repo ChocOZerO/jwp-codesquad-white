@@ -1,11 +1,35 @@
 package chocozero.codesquad.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class User {
+	@Id
+	@GeneratedValue
+	Long id;
+	
+	@Column(name="u_id", length=20, nullable=false)
 	String userId;
+	
+	@Column(nullable=false)
 	String password;
+	
+	@Column(length=20)
 	String name;
+	
+	@Column(length=40)
 	String email;
 	
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getUserId() {
 		return userId;
 	}
