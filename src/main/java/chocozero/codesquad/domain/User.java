@@ -23,6 +23,20 @@ public class User {
 	@Column(length=40)
 	String email;
 	
+	public boolean isUser(String password) {
+		if (this.password.equals(password)) {
+			return true;
+		}
+		return false;
+	}
+	public boolean update(User user) {
+		if (isUser(user.getPassword())) {
+			this.name = user.name;
+			this.email = user.email;
+			return true;
+		}
+		return false;
+	}
 	
 	public Long getId() {
 		return id;
