@@ -12,22 +12,30 @@ import org.springframework.web.servlet.ModelAndView;
 import chocozero.codesquad.domain.Question;
 import chocozero.codesquad.domain.QuestionRepository;
 import chocozero.codesquad.domain.User;
+import chocozero.codesquad.domain.UserRepository;
 
 @Controller
 public class QuestionController {
 	@Autowired
 	QuestionRepository questionRepository;
+	@Autowired
+	UserRepository userRepository;
 	
 	@PostMapping("/qna/form")
 	ModelAndView ask(Question question, HttpSession session) {
+		
 		Object tempSession = session.getAttribute("loginedUser");
 		if (tempSession == null) {
 			return new ModelAndView("redirect:/");
 		}
-		User tempUser = (User)tempSession;
-		question.setWriter(tempUser.getUserId());
-		question.setUserPk(tempUser.getId());
-		System.out.println(question);
+		
+		User dbUser = userRepository.findOne(((User)tempSession).getId());
+		if (dbUser == null) {
+			return new ModelAndView("redirect:/");
+		}
+		
+		question.setWriter(dbUser);
+		
 		questionRepository.save(question);
 		return new ModelAndView("redirect:/");
 	}
@@ -60,17 +68,16 @@ public class QuestionController {
 		if (tempSession == null) {
 			return new ModelAndView("redirect:/");
 		}
-		Question dbQuestion = questionRepository.findOne(id);
 		User tempUser = (User)tempSession;
-		if (!dbQuestion.matchUser(tempUser.getId())) {
+		Question dbQuestion = questionRepository.findOne(id);
+		if (!dbQuestion.matchUser(tempUser)) {
 			return new ModelAndView("redirect:/qna/{id}");
 		}
 		
 		dbQuestion.setTitle(question.getTitle());
-		dbQuestion.setWriter(tempUser.getUserId());
+		dbQuestion.setWriter(tempUser);
 		dbQuestion.setContents(question.getContents());
 		
-		System.out.println(dbQuestion);
 		questionRepository.save(dbQuestion);
 		return new ModelAndView("redirect:/");
 	}
@@ -80,11 +87,15 @@ public class QuestionController {
 		if (tempSession == null) {
 			return new ModelAndView("redirect:/");
 		}
-		User tempUser = (User)tempSession;
-		Question dbQuestion = questionRepository.findOne(id);
-		if (dbQuestion.getUserPk() != tempUser.getId()) {
+		User dbUser = userRepository.findOne(((User)tempSession).getId());
+		if (dbUser == null) {
 			return new ModelAndView("redirect:/");
 		}
+		Question dbQuestion = questionRepository.findOne(id);
+		if (dbQuestion.getWriter().getId() != dbUser.getId()) {
+			return new ModelAndView("redirect:/");
+		}
+		
 		ModelAndView mav = new ModelAndView("qna/updateForm");
 		mav.addObject("question", dbQuestion);
 		return mav;

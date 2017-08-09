@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Question {
@@ -11,35 +13,28 @@ public class Question {
 	@GeneratedValue
 	Long id;
 	
-	@Column(nullable=false)
-	String writer;
-	@Column(nullable=false)
-	Long userPk;
+	@ManyToOne
+    @JoinColumn(nullable=false)
+    private User writer;
 	
 	@Column(length=150, nullable=false)
 	String title;
 	String contents;
 	
-	public boolean matchUser(Long pk) {
-		return this.userPk == pk;
+	public boolean matchUser(User user) {
+		return this.writer.getId() == user.getId();
 	}
 	
-	public Long getUserPk() {
-		return userPk;
-	}
-	public void setUserPk(Long userPk) {
-		this.userPk = userPk;
-	}
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getWriter() {
+	public User getWriter() {
 		return writer;
 	}
-	public void setWriter(String writer) {
+	public void setWriter(User writer) {
 		this.writer = writer;
 	}
 	public String getTitle() {
