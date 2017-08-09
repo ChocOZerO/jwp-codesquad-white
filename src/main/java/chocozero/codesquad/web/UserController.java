@@ -29,9 +29,16 @@ public class UserController {
 	}
 	
 	@PostMapping("/{id}")
-	public String update(@PathVariable Long id, User user) {
+	public String update(@PathVariable Long id, User user, HttpSession session) {
+		Object tempUser = session.getAttribute("loginedUser");
+		if (tempUser == null) {
+			return "/";
+		}
+		User logiendUser = (User)tempUser;
+		if (!logiendUser.matchId(id)) {
+			return "/";
+		}
 		User dbUser = userRepository.findOne(id);
-		
 		if (dbUser.update(user)) {
 		    userRepository.save(dbUser);
 		}
@@ -63,7 +70,6 @@ public class UserController {
 	
 	@PostMapping("/login")
 	public String login(String userId, String password, HttpSession session) {
-		System.out.println("userId : " + userId + " password : " + password);
 		User dbUser = userRepository.findByUserId(userId);
 		if (dbUser == null) {
 			return "user/login_failed";
@@ -76,7 +82,15 @@ public class UserController {
 	}
 	
 	@GetMapping("/{id}/form")
-	public ModelAndView getUserDetail(@PathVariable Long id) {
+	public ModelAndView updateForm(@PathVariable Long id, HttpSession session) {
+		Object tempUser = session.getAttribute("loginedUser");
+		if (tempUser == null) {
+			return new ModelAndView("redirect:/");
+		}
+		User loginedUser = (User)tempUser;
+		if (!loginedUser.matchId(id)) {
+			return new ModelAndView("redirect:/");
+		}
 		ModelAndView mav = new ModelAndView("user/updateForm");
 		mav.addObject("user", userRepository.findOne(id));
 		return mav;
