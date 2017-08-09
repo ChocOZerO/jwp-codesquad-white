@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -81,6 +82,7 @@ public class QuestionController {
 		questionRepository.save(dbQuestion);
 		return new ModelAndView("redirect:/");
 	}
+	
 	@GetMapping("/qna/{id}/form")
 	ModelAndView updateForm(@PathVariable Long id, HttpSession session) {
 		Object tempSession = session.getAttribute("loginedUser");
@@ -99,5 +101,21 @@ public class QuestionController {
 		ModelAndView mav = new ModelAndView("qna/updateForm");
 		mav.addObject("question", dbQuestion);
 		return mav;
+	}
+	
+	@DeleteMapping("/qna/{id}/delete")
+	ModelAndView delete(@PathVariable Long id, Question question, HttpSession session) {
+		Object tempSession = session.getAttribute("loginedUser");
+		if (tempSession == null) {
+			return new ModelAndView("redirect:/");
+		}
+		User tempUser = (User)tempSession;
+		Question dbQuestion = questionRepository.findOne(id);
+		if (!dbQuestion.matchUser(tempUser)) {
+			return new ModelAndView("redirect:/qna/{id}");
+		}
+		
+		questionRepository.delete(dbQuestion);
+		return new ModelAndView("redirect:/");
 	}
 }
