@@ -11,7 +11,7 @@ public class User {
 	@GeneratedValue
 	Long id;
 	
-	@Column(name="u_id", length=20, nullable=false)
+	@Column(name="u_id", length=20, unique=true, nullable=false)
 	String userId;
 	
 	@Column(nullable=false)
@@ -23,14 +23,12 @@ public class User {
 	@Column(length=40)
 	String email;
 	
-	public boolean isUser(String password) {
-		if (this.password.equals(password)) {
-			return true;
-		}
-		return false;
+	public boolean matchPassword(String password) {
+		return this.password.equals(password);
 	}
+	
 	public boolean update(User user) {
-		if (isUser(user.getPassword())) {
+		if (matchPassword(user.password)) {
 			this.name = user.name;
 			this.email = user.email;
 			return true;
