@@ -13,11 +13,23 @@ public class Question {
 	
 	@Column(nullable=false)
 	String writer;
+	@Column(nullable=false)
+	Long userPk;
 	
 	@Column(length=150, nullable=false)
 	String title;
 	String contents;
 	
+	public boolean matchUser(Long pk) {
+		return this.userPk == pk;
+	}
+	
+	public Long getUserPk() {
+		return userPk;
+	}
+	public void setUserPk(Long userPk) {
+		this.userPk = userPk;
+	}
 	public Long getId() {
 		return id;
 	}

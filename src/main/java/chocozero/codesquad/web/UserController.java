@@ -20,6 +20,12 @@ public class UserController {
 	@Autowired
 	UserRepository userRepository;
 	
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.removeAttribute("loginedUser");
+		return "redirect:/";
+	}
+	
 	@GetMapping("/{id}")
 	public ModelAndView show(@PathVariable Long id) {
 		User user = userRepository.findOne(id);
