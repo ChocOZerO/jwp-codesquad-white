@@ -1,0 +1,92 @@
+{{#partial "contents"}}
+<div class="container" id="main">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-default">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th width="50px">당첨</th><th colspan="6">당첨 번호</th><th>보너스번호</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="6">
+                        {{win}}
+                    </td>
+                    <td>{{bonus}}</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="panel panel-default">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th width="50px">결과</th> <th colspan="6">확인결과</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="6">
+                        3개 일치 (5000원) : {{match3}} 개
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="6">
+                        4개 일치 (50000원) : {{match4}} 개
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="6">
+                        5개 일치 (1500000원) : {{match5}} 개
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="6">
+                        5개 일치, 보너스 볼 일치 (30000000원) : {{match5Bonus}} 개
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="6">
+                        6개 일치 (2000000000원) : {{match6}} 개
+                    </td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="panel panel-default">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th width="50px">번호</th> <th colspan="6">구입한 로또</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#lottos}}
+                <tr>
+                    <th scope="row">{{@index}}</td>
+                    <td colspan="6">
+                        {{lotto}}
+                    </td>
+                    <td></td>
+                </tr>
+                {{/lottos}}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{{/partial}}
+
+{{> base}}

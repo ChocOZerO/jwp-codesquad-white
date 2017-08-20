@@ -20,6 +20,9 @@ public class Lotto {
         return this.lotto.contains(num);
     }
     
+    public List<Integer> getLotto() {
+        return this.lotto;
+    }
     public void printLotto() {
         System.out.print("[");
         for (int i = 0; i < this.getLottoNumCount(); i++) {

@@ -8,7 +8,7 @@ public class RewardsTest {
 
     @Test
     public void test() {
-        Rewards rwd = new Rewards(1, 0, 0, 0);
+        Rewards rwd = new Rewards(1, 0, 0, 0, 0);
         
         assertEquals(33, rwd.getRefundRate(15000));
     }
