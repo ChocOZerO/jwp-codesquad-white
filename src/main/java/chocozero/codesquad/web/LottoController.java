@@ -1,98 +1,68 @@
 package chocozero.codesquad.web;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import chocozero.codesquad.domain.LottoChecker;
-import chocozero.codesquad.domain.LottoUser;
-import chocozero.codesquad.domain.Rewards;
-import chocozero.codesquad.domain.User;
-import chocozero.codesquad.domain.Win;
+import lotto.dto.ResultDto;
+import lotto.model.InvalidInputException;
+import lotto.model.LottoGenerator;
+import lotto.model.Lottos;
+import lotto.model.Result;
+import lotto.model.WinningLotto;
 
 @Controller
 @RequestMapping("/lotto")
 public class LottoController {
-    LottoUser lottoUser;
-    ArrayList<String[]> manuals  = new ArrayList<>();
+    static final String NEWLINE = System.getProperty("line.separator");
     
-    @PostMapping("")
-    public ModelAndView getLottos(String money, String auto) {
-        lottoUser = new LottoUser(Integer.parseInt(money));
-        this.setAutoLottoCount(auto);
-        int manualCount = lottoUser.getManualLottoCount();
-        if (manualCount > 0) {
-            ModelAndView mav = new ModelAndView("lotto/manuals");
-            for (int i = 0; i < manualCount; i++) {
-                String[] manual = new String[6];
-                manuals.add(manual);
-            }
-            mav.addObject("manuals", manuals);
-            return mav;
-        }
-        return new ModelAndView("redirect:/lotto/show");
-    }
-    
-    private void setAutoLottoCount(String auto) {
-        if (!"".equals(auto)) {
-            lottoUser.setAutoLottoCount(Integer.parseInt(auto));
-        } else {
-            lottoUser.setAutoLottoCount(lottoUser.getLottoCount());
-        }
-    }
+    Lottos lottos = null;
     
     @GetMapping("")
-    public String lottoForm() {
-        return "lotto/form";
+    public String home() {
+        return "lotto/index";
     }
     
-    @PostMapping("/manuals")
-    public String getManuals(@RequestParam(value="manual") String[] manualArray) {
-        for (int i = 0; i < manualArray.length; i++) {
-            manuals.set(i, manualArray[i].split(" "));
+    @PostMapping("/buyLotto")
+    public String buyLotto(String inputMoney, String manualNumber, Model model) {
+        String[] manuals = manualNumber.split(NEWLINE);
+        try {
+            this.lottos = LottoGenerator.generateByMoney(inputMoney, manuals);
+        } catch (InvalidInputException e) {
+            e.printStackTrace();
+            model.addAttribute("err", e.getMessage());
+            return "lotto/input_failed";
         }
-        lottoUser.setManuals(manuals);
-        return "redirect:/lotto/show";
+        model.addAttribute("volume", this.lottos.count());
+        model.addAttribute("lottos", this.lottos.getLottos());
+        return "lotto/show";
     }
-    
-    @GetMapping("/show")
-    public ModelAndView show() {
+    @GetMapping("/buyLotto")
+    public ModelAndView getWinngLotto(Model model) {
         ModelAndView mav = new ModelAndView("lotto/show");
-        lottoUser.buyLottos();
-        lottoUser.printLottos();
-        mav.addObject("lottos", lottoUser.getLottos());
+        
         return mav;
     }
     
-    @GetMapping("/result")
-    public ModelAndView result() {
-        ModelAndView mav = new ModelAndView("lotto/result");
-        Win win = new Win("lottery");
-        LottoChecker lottoChecker = new LottoChecker(lottoUser, win);
-        lottoChecker.matchUp();
+    @PostMapping("/matchLotto")
+    public String matchLotto(String winningNumber, String bonusNumber, Model model) {
+        WinningLotto winningLotto = null;
+        try {
+            winningLotto = new WinningLotto(winningNumber, bonusNumber);
+        } catch (InvalidInputException e) {
+            e.printStackTrace();
+            model.addAttribute("err", e.getMessage());
+            model.addAttribute("volume", this.lottos.count());
+            model.addAttribute("lottos", this.lottos.getLottos());
+            return "lotto/show_failed";
+        }
         
-        mav.addObject("lottos", lottoUser.getLottos());
-        mav.addObject("win", win.getWin().getLotto());
-        mav.addObject("bonus", win.getBonus());
-        
-        mav.addObject("match3", lottoChecker.getMatch3());
-        mav.addObject("match4", lottoChecker.getMatch4());
-        mav.addObject("match5", lottoChecker.getMatch5());
-        mav.addObject("match5Bonus", lottoChecker.getMatch5Bonus());
-        mav.addObject("match6", lottoChecker.getMatch6());
-        
-        Rewards rewards = new Rewards(lottoChecker.getMatch3()
-                , lottoChecker.getMatch4(), lottoChecker.getMatch5()
-                , lottoChecker.getMatch5Bonus(), lottoChecker.getMatch6());
-        mav.addObject("refundRate", rewards.getRefundRate(lottoUser.getMoney()));
-        
-        return mav;
+        Result result = this.lottos.match(winningLotto, winningLotto.getBonus());
+        ResultDto resultDto = ResultDto.fromResult(result);
+        model.addAttribute("result", resultDto);
+        return "lotto/result";
     }
 }
